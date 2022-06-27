@@ -40,9 +40,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: powershell
-        run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"ggfaa_Umbraco-CMS" /o:"ggfaa-test" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-           echo "Run Umbraco-CMS build"
-        pwsh -command .\build\build.ps1
+        # Now restore packages and build everything.
+          dotnet restore src/umbraco.sln
+          dotnet test src/umbraco.sln --collect "Code Coverage"
+          dotnet build src/umbraco.sln --configuration release
+
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
